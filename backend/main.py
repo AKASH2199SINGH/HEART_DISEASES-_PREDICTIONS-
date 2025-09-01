@@ -1,10 +1,29 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import numpy as np
 import pickle
 import os
+import openai
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # restrict to your frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+model = None
+if os.path.exists("heart.pkl"):
+    with open("heart.pkl", "rb") as f:
+        model = pickle.load(f)
+else:
+    raise RuntimeError("Error: heart.pkl not found. Please add the model file.")
+
+openai.api_key = os.getenv("OPENAI_API_KEY", "YOUR_OPENAI_API_KEY_HERE")
 
 
 class Patient(BaseModel):
@@ -19,33 +38,19 @@ class Patient(BaseModel):
     ca: int
     thal: int
 
-app = FastAPI()
 
+class ChatRequest(BaseModel):
+    message: str
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-model = None
-if os.path.exists("heart.pkl"):
-    with open("heart.pkl", "rb") as f:
-        model = pickle.load(f)
-else:
-    raise RuntimeError("Error: heart.pkl not found. Please add the model file.")
 
 @app.get("/", response_model=dict)
 def welcome():
     return {"result": "welcome"}
 
+
 @app.post("/predict", response_model=dict)
 def predict(input: Patient):
     try:
-       
         if not (0 <= input.age <= 120):
             raise HTTPException(status_code=400, detail="Age must be between 0 and 120")
         if not (0 <= input.cp <= 3):
@@ -67,7 +72,6 @@ def predict(input: Patient):
         if not (0 <= input.thal <= 3):
             raise HTTPException(status_code=400, detail="Thalassemia must be between 0 and 3")
 
-       
         features = np.array([[
             input.age,
             input.cp,
@@ -75,13 +79,12 @@ def predict(input: Patient):
             input.chol,
             input.restecg,
             input.thalach,
-            float(input.oldpeak),  # ensure float
+            float(input.oldpeak),
             input.slope,
             input.ca,
             input.thal
         ]], dtype=float)
 
-        
         pred = model.predict(features)
         proba = model.predict_proba(features).tolist() if hasattr(model, "predict_proba") else None
 
@@ -95,3 +98,22 @@ def predict(input: Patient):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+
+@app.post("/chat")
+async def chat_with_bot(req: ChatRequest):
+    prompt = f"You are a helpful assistant specialized in heart disease. User: {req.message}\nAssistant:"
+
+    try:
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=150,
+            temperature=0.7,
+            n=1,
+            stop=["User:", "Assistant:"],
+        )
+        reply = response.choices[0].text.strip()
+        return {"reply": reply}
+    except Exception:
+        return {"reply": "Sorry, I could not process your request at this time."}
