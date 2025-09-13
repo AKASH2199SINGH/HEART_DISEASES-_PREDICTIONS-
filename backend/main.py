@@ -4,19 +4,21 @@ from pydantic import BaseModel
 import numpy as np
 import pickle
 import os
-import openai
+from groq import Groq  # Correct import for Groq client
 
+# Initialize FastAPI app
 app = FastAPI()
 
+# Allow CORS (configure appropriately for production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # For production, restrict accordingly
+    allow_origins=["*"],  # Restrict this in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Load model file
+# Load model
 model = None
 if os.path.exists("heart.pkl"):
     with open("heart.pkl", "rb") as f:
@@ -24,14 +26,14 @@ if os.path.exists("heart.pkl"):
 else:
     raise RuntimeError("Error: heart.pkl not found. Please add the model file.")
 
-# Load OpenAI API Key securely
-import os
-import openai
+# Initialize Groq client with API key
+groq_api_key = os.getenv("GROQ_API_KEY", "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")  # Default for dev; use env var in production
+if not groq_api_key:
+    raise RuntimeError("GROQ_API_KEY not set.")
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-if openai.api_key is None:
-    raise RuntimeError("OPENAI_API_KEY environment variable not set")
+groq_client = Groq(api_key=groq_api_key)
 
+# Request models
 class Patient(BaseModel):
     age: int
     cp: int
@@ -47,6 +49,7 @@ class Patient(BaseModel):
 class ChatRequest(BaseModel):
     message: str
 
+# Routes
 @app.get("/", response_model=dict)
 def welcome():
     return {"result": "welcome"}
@@ -54,9 +57,6 @@ def welcome():
 @app.post("/predict", response_model=dict)
 def predict(input: Patient):
     try:
-        # Validation here...
-        # Same as your original code
-
         features = np.array([[
             input.age,
             input.cp,
@@ -84,20 +84,35 @@ def predict(input: Patient):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
+import httpx  # Make sure httpx is installed: pip install httpx
+
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
+
 @app.post("/chat")
 async def chat_with_bot(req: ChatRequest):
-    prompt = f"You are a helpful assistant specialized in heart disease. User: {req.message}\nAssistant:"
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "openai/gpt-oss-20b",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant specialized in heart disease."},
+            {"role": "user", "content": req.message}
+        ],
+        "temperature": 0.7,
+        "max_tokens": 150
+    }
+
     try:
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=150,
-            temperature=0.7,
-            n=1,
-            stop=["User:", "Assistant:"],
-        )
-        reply = response.choices[0].text.strip()
-        return {"reply": reply}
-    except Exception as e:
-        print("OpenAI error:", str(e))  # Print the error in backend console
+        async with httpx.AsyncClient() as client:
+            response = await client.post(GROQ_API_URL, headers=headers, json=payload)
+            response.raise_for_status()  # Raise error if HTTP status code is not 2xx
+            data = response.json()
+            reply = data["choices"][0]["message"]["content"].strip()
+            return {"reply": reply}
+    except httpx.HTTPError as e:
+        print("Groq API error:", str(e))
         return {"reply": "Sorry, I could not process your request at this time."}
