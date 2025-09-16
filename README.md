@@ -1,4 +1,4 @@
-# HEARTDISEASE
+# HEARTDISEASE PREDICTION
 
 Transforming Heart Care with Data-Driven Precision
 
@@ -58,7 +58,7 @@ This project requires the following dependencies:
 
 #### Installation
 
-Build heartdisease from the source and install dependencies:
+Build heartdisease predictions from the source and install dependencies:
 
 1.  Clone the repository:
 
