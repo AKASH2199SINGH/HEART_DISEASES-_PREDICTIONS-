@@ -27,7 +27,7 @@ else:
     raise RuntimeError("Error: heart.pkl not found. Please add the model file.")
 
 # Initialize Groq client with API key
-groq_api_key = os.getenv("GROQ_API_KEY", "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")  # Default for dev; use env var in production
+groq_api_key = os.getenv("GROQ_API_KEY", "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")  # Default for dev; use env var in production
 if not groq_api_key:
     raise RuntimeError("GROQ_API_KEY not set.")
 
@@ -87,7 +87,7 @@ def predict(input: Patient):
 import httpx  # Make sure httpx is installed: pip install httpx
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
 
 @app.post("/chat")
 async def chat_with_bot(req: ChatRequest):
