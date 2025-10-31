@@ -11,9 +11,15 @@ from groq import Groq  # Correct import for Groq client
     # Make sure to install required packages: fastapi, uvicorn, numpy, scikit-learn, pydantic, groq
     #now ypu should use the frontend to start by giving command : npm run dev 
 
+
     
 # Initialize FastAPI app
 app = FastAPI()
+origins = [
+    "https://heart-diseases-predictions-52ut.vercel.app",  # your frontend vercel URL
+    "http://localhost:5173",
+    "*"
+]
 
 # Allow CORS (configure appropriately for production)
 app.add_middleware(
