@@ -1,10 +1,16 @@
 {
   "version": 2,
   "builds": [
-    { "src": "backend/main.py", "use": "@vercel/python" }
+    {
+      "src": "backend/main.py",
+      "use": "@vercel/python"
+    }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "backend/main.py" }
+    {
+      "src": "/(.*)",
+      "dest": "backend/main.py"
+    }
   ],
-  "devCommand": "uvicorn backend.main:app --host 0.0.0.0 --port 3000"
+  "devCommand": "cd backend && uvicorn main:app --host 0.0.0.0 --port 3000"
 }
