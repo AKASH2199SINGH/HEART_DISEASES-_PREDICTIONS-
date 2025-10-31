@@ -56,9 +56,10 @@ class ChatRequest(BaseModel):
     message: str
 
 # Routes
-@app.get("/", response_model=dict)
-def welcome():
-    return {"result": "welcome"}
+@app.get("/")
+def home():
+    return {"message": "Heart Disease Prediction API is Live ✅"}
+
 
 @app.post("/predict", response_model=dict)
 def predict(input: Patient):
