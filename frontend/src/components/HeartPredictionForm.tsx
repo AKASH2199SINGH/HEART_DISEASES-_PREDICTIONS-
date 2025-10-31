@@ -108,7 +108,10 @@ const HeartPredictionForm = () => {
     try {
       console.log("Sending data to backend:", formData);
 
-      const response = await fetch("http://127.0.0.1:8000/predict", {
+     const API_URL = import.meta.env.VITE_API_URL;
+
+const response = await fetch(`${API_URL}/predict`
+, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
