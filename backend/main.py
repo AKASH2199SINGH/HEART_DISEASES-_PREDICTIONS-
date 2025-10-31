@@ -6,6 +6,12 @@ import pickle
 import os
 from groq import Groq  # Correct import for Groq client
 
+# if you want to run this then you have to firslty run the backend server using: uvicorn backend.main:app --reload or   python -m uvicorn main:app --reload 
+# you have to run this command in the backend folder where main.py is located\
+    # Make sure to install required packages: fastapi, uvicorn, numpy, scikit-learn, pydantic, groq
+    #now ypu should use the frontend to start by giving command : npm run dev 
+
+    
 # Initialize FastAPI app
 app = FastAPI()
 
