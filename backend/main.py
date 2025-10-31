@@ -16,17 +16,15 @@ from groq import Groq  # Correct import for Groq client
 # Initialize FastAPI app
 app = FastAPI()
 origins = [
-    "https://heart-diseases-predictions-52ut.vercel.app",  # your frontend vercel URL
-    "http://localhost:5173",
-    "*"
+    "https://heart-diseases-predictions-52ut.vercel.app",  # your frontend URL
+    "http://localhost:5173"
 ]
 
-# Allow CORS (configure appropriately for production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict this in production
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
