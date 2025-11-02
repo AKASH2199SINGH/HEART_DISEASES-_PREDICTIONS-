@@ -29,12 +29,23 @@ app.add_middleware(
 )
 
 # Load model
+# model = None
+# if os.path.exists("heart.pkl"):
+#     with open("heart.pkl", "rb") as f:
+#         model = pickle.load(f)
+# else:
+#     raise RuntimeError("Error: heart.pkl not found. Please add the model file.")
+
+# Path to heart.pkl inside the same backend folder
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "heart.pkl")
+
 model = None
-if os.path.exists("heart.pkl"):
-    with open("heart.pkl", "rb") as f:
+if os.path.exists(MODEL_PATH):
+    with open(MODEL_PATH, "rb") as f:
         model = pickle.load(f)
 else:
-    raise RuntimeError("Error: heart.pkl not found. Please add the model file.")
+    raise RuntimeError(f"Error: heart.pkl not found at {MODEL_PATH}. Please upload the file.")
+
 
 # Initialize Groq client with API key
 groq_api_key = os.getenv("GROQ_API_KEY", "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")  # Default for dev; use env var in production
