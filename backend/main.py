@@ -15,20 +15,31 @@ from groq import Groq  # Correct import for Groq client
     
 # Initialize FastAPI app
 app = FastAPI()
-origins = [
-    "https://heart-diseases-predictions-52ut.vercel.app", # ✅ Your Vercel FE
-    "https://heart-diseases-predictions.onrender.com",   # ✅ Backend URL
-    "http://localhost:5173"
-]
+# origins = [
+#     "https://heart-diseases-predictions-52ut.vercel.app", # ✅ Your Vercel FE
+#     "https://heart-diseases-predictions.onrender.com",   # ✅ Backend URL
+#     "http://localhost:5173"
+# ]
 
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["POST", "OPTIONS"],
+#     allow_headers=["*"],
+# )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["POST", "OPTIONS"],
+    allow_origins=[
+        "https://heart-diseases-predictions-52ut.vercel.app",  # your Vercel FE
+        "https://heart-diseases-predictions.onrender.com",    # backend
+        "http://localhost:5173"
+    ],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Load model
 # model = None
