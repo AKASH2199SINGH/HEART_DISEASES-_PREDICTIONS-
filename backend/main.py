@@ -15,29 +15,20 @@ from groq import Groq  # Correct import for Groq client
     
 # Initialize FastAPI app
 app = FastAPI()
-# origins = [
-#     "https://heart-diseases-predictions-52ut.vercel.app", # ✅ Your Vercel FE
-#     "https://heart-diseases-predictions.onrender.com",   # ✅ Backend URL
-#     "http://localhost:5173"
-# ]
+# CORS configuration
 
+origins = [
+    "https://heart-diseases-predictions-52ut.vercel.app",  # your frontend URL
+    "https://heart-diseases-predictions.onrender.com",       # backend domain
+    "http://localhost:5173"
+]
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["POST", "OPTIONS"],
-#     allow_headers=["*"],
-# )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://heart-diseases-predictions-52ut.vercel.app",  # your Vercel FE
-        # "https://heart-diseases-predictions.onrender.com",    # backend
-        "http://localhost:5173"
-    ],
+    allow_origins=origins,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=True,
 )
 
 
@@ -52,14 +43,11 @@ app.add_middleware(
 # Path to heart.pkl inside the same backend folder
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "heart.pkl")
 
-
-model = None
-if os.path.exists(MODEL_PATH):
-    with open(MODEL_PATH, "rb") as f:
-        model = pickle.load(f)
-else:
+if not os.path.exists(MODEL_PATH):
     raise RuntimeError(f"Error: heart.pkl not found at {MODEL_PATH}. Please upload the file.")
 
+with open(MODEL_PATH, "rb") as f:
+    model = pickle.load(f)
 
 # Initialize Groq client with API key
 groq_api_key = os.getenv("GROQ_API_KEY", "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")  # Default for dev; use env var in production
