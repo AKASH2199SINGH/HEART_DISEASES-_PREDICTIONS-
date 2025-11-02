@@ -108,9 +108,12 @@ const HeartPredictionForm = () => {
     try {
       console.log("Sending data to backend:", formData);
 
-     const API_URL = import.meta.env.VITE_API_URL;
+// ✅ Use live backend URL directly
+const API_URL = "https://heart-diseases-predictions.onrender.com";
 
 const response = await fetch(`${API_URL}/predict`
+
+
 , {
         method: "POST",
         headers: {

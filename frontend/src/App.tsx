@@ -105,30 +105,29 @@ import ChatIcon from "./chatbot/ChatIcon";
 
 // ✅ Keep Only This
 // ✅ Backend API URL
-const API_URL = "https://heart-diseases-predictions.onrender.com";
-
-
+const API_URL = "https://heart-diseases-predictions.onrender.com/predict";
 
 export async function predictHeartDisease(data) {
   try {
-    const res = await fetch(`${API_URL}/predict`, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-});
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-    return await res.json();
+    const result = await res.json();
+    console.log("Backend Response:", result);
+    return result; // return response
   } catch (error) {
-    console.error("Prediction API error:", error);
-    return { error: "Backend not reachable" };
+    console.error("API Error:", error);
+    return { error: true, message: "API request failed" };
   }
 }
 
 
 
 const queryClient = new QueryClient();
+
 
 const App = () => {
   const [showChatbot, setShowChatbot] = useState(false);
