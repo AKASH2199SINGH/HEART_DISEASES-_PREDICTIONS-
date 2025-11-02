@@ -16,9 +16,11 @@ from groq import Groq  # Correct import for Groq client
 # Initialize FastAPI app
 app = FastAPI()
 origins = [
-    "https://heart-diseases-predictions-52ut.vercel.app",  # your frontend URL
+    "https://heart-diseases-predictions-52ut.vercel.app", # ✅ Your Vercel FE
+    "https://heart-diseases-predictions.onrender.com",   # ✅ Backend URL
     "http://localhost:5173"
 ]
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +40,7 @@ app.add_middleware(
 
 # Path to heart.pkl inside the same backend folder
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "heart.pkl")
+
 
 model = None
 if os.path.exists(MODEL_PATH):
