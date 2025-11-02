@@ -107,20 +107,22 @@ import ChatIcon from "./chatbot/ChatIcon";
 // ✅ Backend API URL
 const API_URL = "https://heart-diseases-predictions.onrender.com";
 
+
 export async function predictHeartDisease(formData) {
   try {
     const res = await fetch(`${API_URL}/predict`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(Object.fromEntries(formData)),
     });
 
     return await res.json();
   } catch (error) {
     console.error("Prediction API error:", error);
-    return { error: "Failed to fetch backend" };
+    return { error: "API Failed" };
   }
 }
+
 
 
 const queryClient = new QueryClient();

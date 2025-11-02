@@ -33,7 +33,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://heart-diseases-predictions-52ut.vercel.app",  # your Vercel FE
-        "https://heart-diseases-predictions.onrender.com",    # backend
+        # "https://heart-diseases-predictions.onrender.com",    # backend
         "http://localhost:5173"
     ],
     allow_methods=["*"],
