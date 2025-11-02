@@ -104,22 +104,27 @@ import ActionProvider from "./chatbot/ActionProvider";
 import ChatIcon from "./chatbot/ChatIcon"; 
 
 // ✅ Keep Only This
-const API_URL = import.meta.env.VITE_API_URL;
+// ✅ Backend API URL
+const API_URL = "https://heart-diseases-predictions.onrender.com";
 
-// ✅ New function (safe API call)
-export async function predictHeartDisease(formData) {
+// ✅ Heart Prediction API function
+export async function predictHeartDisease(data) {
   try {
     const res = await fetch(`${API_URL}/predict`, {
       method: "POST",
-      body: formData
+      headers: { 
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
     });
 
     return await res.json();
   } catch (error) {
     console.error("Prediction API error:", error);
-    return { error: "API Failed" };
+    return { error: "Backend not reachable" };
   }
 }
+
 
 const queryClient = new QueryClient();
 
