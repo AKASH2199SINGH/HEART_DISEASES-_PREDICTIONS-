@@ -18,10 +18,12 @@ app = FastAPI()
 # CORS configuration
 
 origins = [
-    "https://heart-diseases-predictions-52ut.vercel.app",  # your frontend URL
-    "https://heart-diseases-predictions.onrender.com",       # backend domain
-    "http://localhost:5173"
+    "https://heart-diseases-predictions-52ut-1zt62bsg6.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "*"
 ]
+
 
 app.add_middleware(
     CORSMiddleware,
